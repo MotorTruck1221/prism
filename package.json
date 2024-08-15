@@ -1,0 +1,17 @@
+{
+  "name": "prism",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "AGPL-3.0-only",
+  "dependencies": {
+    "express": "^4.19.2",
+    "wisp-server-node": "^1.1.3"
+  }
+}
