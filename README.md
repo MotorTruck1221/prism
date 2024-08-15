@@ -6,4 +6,4 @@ https://motortruck1221.com/blog/
 
 - Part 1:
   - [Blog Post](http://localhost:3000/blog/making-a-proxy-from-scratch-p1)
-  - [Files](https://github.com/Ruby-Network/prism/tree/608032acd0cb08d0adc177f12aef7625852edd2b)
+  - [Files](https://github.com/MotorTruck1221/prism/tree/f7e28e40213b9a282c06553467e74773f1c52597)
