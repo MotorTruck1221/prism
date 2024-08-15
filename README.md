@@ -3,5 +3,5 @@
 This is the repo for my blog posts on setting up a proxy frontend from scratch.
 
 - Part 1:
- - [Blog Post]()
- - [Files]()
+  - [Blog Post]()
+  - [Files]()
