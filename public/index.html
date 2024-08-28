@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Basic boilerplate nothing interesting going on here -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+        <title> Prism </title> 
+        <!-- End basic boilerplate -->
+        <style>
+            /** Basic CSS boilerplate **/
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                width: 100%;
+                height: 100vh;
+            }
+            /** End basic CSS boilerplate **/
+
+            /** add the "dnone" class (display none) **/
+            .dnone {
+                display: none;
+                visibility: hidden;
+                width: 0%;
+                height: 0%;
+            }
+
+            /** Style the "main" div **/
+            #main {
+                width: 100%;
+                height: 100%;
+                background: black;
+                display: flex;
+                flex-direction: column;
+                gap: 2rem; 
+                justify-content: center;
+                align-items: center;
+            }
+
+            /** Style the title **/
+            #title {
+                color: white;
+                font-weight: 900;
+                font-size: 4rem;
+            }
+
+            /** Style the description **/
+            #description {
+                color: white;
+                font-weight: 200;
+                opacity: 0.75;
+            }
+
+            /** Style the input (address bar) **/
+            #address {
+                width: 30rem;
+                height: 4rem;
+                background: #33001a;
+                color: white;
+                outline: none;
+                border: none;
+                padding: 14px;
+                font-size: 1rem;
+                font-weight: 900;
+                border-radius: 1rem;
+            }
+
+            /** Style the iframe **/
+            #frame {
+                width: 100%;
+                height: 100%;
+                /** Set position to absolute. This allows us to open the iframe ON TOP of everything **/
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                background: black;
+                outline: none;
+                border: none;
+            }
+        </style>
+        <!-- The UV bundle. It contains most of the code for ultraviolet to function properly -->
+        <script src="uv/uv.bundle.js" defer></script>
+        <!-- The uv.config.js file we just made. -->
+        <script src="uv/uv.config.js" defer></script>
+        <!-- BareMux content -->
+        <script src="baremux/index.js" defer></script>
+    </head>
+    <body>
+        <div id="main">
+            <!-- Title -->
+            <h1 id="title"> Prism </h1>
+            <!-- Description --> 
+            <p id="description"> A barebones example from MotorTruck1221's guide "Creating a proxy frontend from scratch" </p>
+            <!-- Search bar -->
+            <input id="address" type="text" placeholder="Search..." />
+            <!-- iframe where the content will be loaded -->
+            <iframe id="frame" class="dnone"></iframe>
+        </div>
+        <script>
+            async function regSW() {
+                //if the service worker doesn't exist throw an error
+                if (!navigator.serviceWorker) {
+                    throw new Error("Your browser doesn't support service workers.");
+                }
+                //register the service worker. (We just made that file!)
+                await navigator.serviceWorker.register("/sw.js");
+            }
+            regSW();
+            //function for ease of use
+            async function setTransport() {
+                //create a new bare mux connection
+                const conn = new BareMux.BareMuxConnection("/baremux/worker.js");
+                //If you are using http:// change it to ws:// or if using https:// change it to wss://, get the domain name and add "/wisp/" to the end of it
+                const wispUrl = (location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/wisp/";
+                //actually set the transport!!
+                await conn.setTransport("/epoxy/index.mjs", [{ wisp: wispUrl /* We just set this url! */ }]);
+            }
+            //new function, pass in the url so we can actually proxy it!
+            async function proxy(url) {
+                //get the iframe!
+                const iframe = document.getElementById("frame");
+                //create the initial url with ultraviolet
+                const uvUrl = __uv$config.prefix /* The prefix set in the config */ + __uv$config.encodeUrl(/* Our search function! */ search(url, "https://www.google.com/search?q=%s" /* the search engine template. Feel free to change it to whatever search engine you want (just make sure to add %s add the end!) */)) /* Encode the url with XOR */
+                //call our setTransport function
+                await setTransport();
+                //remove the "dnone" class so the iframe is visible.
+                iframe.classList.remove("dnone");
+                //set the iframe's source to the initial url
+                iframe.src = uvUrl;
+            }
+            //listen for keypresses in the address bar
+            document.getElementById("address").addEventListener("keypress", function (event) {
+                //if it's the enter key, proxy the url!
+                if (event.key === "Enter") {
+                    //call our proxy function with the url they entered
+                    proxy(document.getElementById("address").value /* The value the user has entered */)
+                }
+            });
+            //new function to allow a user to be able to search intead of having to type in a full url
+            function search(key /* the user's value */, template /* the search engine template to use */) {
+                try {
+                    //if the entered a full url! Continue on
+                    return new URL(key).toString();
+                } catch (error) { /* ignore errors */ }
+                try {
+                    //if the entered value is a full URL when adding http:// or https:// in front of it, add http:// and the continue.
+                    const url = new URL(`http://${key}`);
+                    //we also have to make sure it is an actual domain!
+                    if (url.hostname.includes('.')) return url.toString();
+                } catch (error) { /* Ignore the errors */ }
+                //if the above doesn't pass, add the entered value to a search template and the continue.
+                return template.replace("%s", encodeURIComponent(key));
+            }
+        </script>
+    </body>
+</html>
