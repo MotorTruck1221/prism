@@ -6,4 +6,7 @@ https://motortruck1221.com/blog/
 
 - Part 1:
   - [Blog Post](https://motortruck1221.com/blog/making-a-proxy-from-scratch-p1)
-  - [Files](https://github.com/MotorTruck1221/prism/tree/f7e28e40213b9a282c06553467e74773f1c52597)
+  - [Files](https://github.com/MotorTruck1221/prism/tree/7805268abc230ff75b83896a4096546319ea778b)
+- Part 2:
+    - [Blog Post](https://motortruck1221.com/blog/making-a-proxy-from-scratch-p2)
+    - [Files]()
